@@ -1,0 +1,2943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BUGHUNTER // TARGET DISCOVERY TERMINAL</title>
+
+<style>
+
+/* =========================================================
+   BUGHUNTER // BLACK + RED TERMINAL THEME
+   CSS ONLY — NO HTML / TEXT / JAVASCRIPT CHANGES
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black-0: #000000;
+    --black-1: #050505;
+    --black-2: #080808;
+    --black-3: #0c0a0a;
+    --black-4: #111010;
+
+    --red-dark: #3b1111;
+    --red-deep: #5a1515;
+    --red: #8d2020;
+    --red-bright: #b52b2b;
+    --red-hot: #d33a3a;
+
+    --text: #d8d0d0;
+    --text-bright: #eee7e7;
+    --text-muted: #807777;
+    --text-dim: #5e5555;
+
+    --border: #2b2020;
+    --border-red: #4a2424;
+}
+
+/* ---------- BASE ---------- */
+
+html {
+    background: var(--black-0);
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(100, 0, 0, 0.16),
+            transparent 42%
+        ),
+        linear-gradient(
+            180deg,
+            #050505 0%,
+            #020202 100%
+        );
+
+    color: var(--text);
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Mono",
+        "Consolas",
+        "Courier New",
+        monospace;
+
+    letter-spacing: 0.2px;
+}
+
+/* ---------- CRT SCANLINES ---------- */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+    z-index: 9999;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.012) 0px,
+            rgba(255, 255, 255, 0.012) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    opacity: 0.35;
+}
+
+/* ---------- MAIN APP ---------- */
+
+.app {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 22px;
+}
+
+/* ---------- TOP BAR ---------- */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 46px;
+    padding: 0 16px;
+
+    background: #090909;
+    border: 1px solid #282020;
+    border-left: 2px solid var(--red);
+
+    box-shadow:
+        0 0 18px rgba(80, 0, 0, 0.08),
+        inset 0 0 20px rgba(255, 0, 0, 0.015);
+
+    font-family:
+        "Cascadia Mono",
+        "JetBrains Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 12px;
+    letter-spacing: 1.5px;
+}
+
+/* ---------- ACTIVE STATUS ---------- */
+
+.active {
+    color: #c5baba;
+}
+
+.active-dot {
+    display: inline-block;
+
+    width: 7px;
+    height: 7px;
+
+    margin-right: 8px;
+
+    border-radius: 50%;
+
+    background: var(--red-bright);
+
+    box-shadow:
+        0 0 6px rgba(181, 43, 43, 0.8),
+        0 0 12px rgba(181, 43, 43, 0.35);
+}
+
+/* ---------- HERO ---------- */
+
+.hero {
+    position: relative;
+
+    margin-top: 18px;
+    padding: 34px 30px 28px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(80, 0, 0, 0.08),
+            transparent 65%
+        ),
+        #0b0909;
+
+    border: 1px solid #292020;
+    border-left: 4px solid var(--red);
+
+    box-shadow:
+        inset 0 0 35px rgba(100, 0, 0, 0.035),
+        0 0 25px rgba(60, 0, 0, 0.05);
+}
+
+/* ---------- MAIN TITLE ---------- */
+
+.hero h1 {
+    color: var(--text-bright);
+
+    font-family:
+        "Bahnschrift Condensed",
+        "Arial Narrow",
+        "Cascadia Mono",
+        "Consolas",
+        monospace;
+
+    font-size: clamp(30px, 5vw, 62px);
+    font-weight: 700;
+
+    letter-spacing: 4px;
+    line-height: 1;
+
+    text-shadow:
+        0 0 10px rgba(180, 30, 30, 0.18);
+}
+
+.hero h1 span {
+    color: var(--red-bright);
+
+    text-shadow:
+        0 0 8px rgba(181, 43, 43, 0.25);
+}
+
+/* ---------- HERO SUBTITLE ---------- */
+
+.hero p {
+    margin-top: 13px;
+
+    color: #776f6f;
+
+    font-family:
+        "Cascadia Mono",
+        "JetBrains Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+/* ---------- GLITCH ---------- */
+
+.glitch {
+    position: relative;
+}
+
+/* ---------- COMMAND LINE ---------- */
+
+.command-line {
+    margin-top: 15px;
+    padding: 11px 14px;
+
+    background: #050505;
+
+    border: 1px solid #292020;
+    border-left: 2px solid #5c1919;
+
+    color: #766e6e;
+
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 12px;
+}
+
+.command-line strong {
+    color: #a95b5b;
+}
+
+.cursor {
+    display: inline-block;
+
+    width: 7px;
+    height: 14px;
+
+    margin-left: 5px;
+
+    vertical-align: middle;
+
+    background: var(--red);
+
+    animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ---------- SECTIONS ---------- */
+
+.section {
+    margin-top: 18px;
+
+    background: #090808;
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        inset 0 0 30px rgba(80, 0, 0, 0.025);
+}
+
+/* ---------- SECTION HEADER ---------- */
+
+.section-header {
+    padding: 11px 15px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(90, 0, 0, 0.16),
+            transparent 55%
+        ),
+        #100e0e;
+
+    border-bottom: 1px solid #302020;
+
+    color: #a99f9f;
+
+    font-family:
+        "Cascadia Mono",
+        "JetBrains Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    letter-spacing: 2px;
+}
+
+/* ---------- FILTER AREA ---------- */
+
+.filter-area {
+    padding: 20px;
+}
+
+/* ---------- GRID ---------- */
+
+.grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(230px, 1fr)
+        );
+
+    gap: 16px;
+}
+
+/* ---------- LABELS ---------- */
+
+label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #807575;
+
+    font-family:
+        "Cascadia Mono",
+        "JetBrains Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.5px;
+}
+
+/* ---------- INPUT WRAPPER ---------- */
+
+.input-wrap {
+    position: relative;
+}
+
+/* ---------- INPUTS ---------- */
+
+input,
+select,
+textarea {
+    width: 100%;
+
+    min-height: 40px;
+
+    padding: 9px 36px 9px 12px;
+
+    background: #030303;
+
+    border: 1px solid #302525;
+
+    border-radius: 0;
+
+    outline: none;
+
+    color: #d4caca;
+
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 12px;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: #4a2929;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    background: #060303;
+
+    border-color: #8b2929;
+
+    box-shadow:
+        0 0 0 1px rgba(139, 41, 41, 0.18),
+        inset 0 0 10px rgba(120, 0, 0, 0.07);
+}
+
+/* ---------- PLACEHOLDER ---------- */
+
+input::placeholder,
+textarea::placeholder {
+    color: #504848;
+}
+
+/* ---------- INPUT ARROW ---------- */
+
+.input-arrow {
+    position: absolute;
+
+    right: 12px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #875555;
+
+    pointer-events: none;
+
+    font-size: 12px;
+}
+
+/* ---------- BOUNTY MODULE ---------- */
+
+.bounty-module {
+    margin-top: 18px;
+
+    padding: 16px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(100, 0, 0, 0.08),
+            transparent
+        ),
+        #080606;
+
+    border: 1px solid #472525;
+    border-left: 2px solid #7e2525;
+}
+
+.bounty-header {
+    margin-bottom: 13px;
+
+    color: #a87979;
+
+    font-family:
+        "Cascadia Mono",
+        "JetBrains Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 11px;
+
+    letter-spacing: 1.5px;
+}
+
+.bounty-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(170px, 1fr)
+        );
+
+    gap: 12px;
+}
+
+/* ---------- OPERATORS ---------- */
+
+.operator-area {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(180px, 1fr)
+        );
+
+    gap: 10px;
+
+    padding: 18px 20px;
+}
+
+.operator {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 11px 12px;
+
+    background: #070606;
+
+    border: 1px solid #2c2222;
+
+    color: #8f8585;
+
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 11px;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.operator:hover {
+    background: #0d0808;
+    border-color: #572828;
+}
+
+.operator input[type="checkbox"] {
+    width: auto;
+    min-height: auto;
+
+    padding: 0;
+
+    accent-color: var(--red);
+}
+
+/* ---------- ACTION AREA ---------- */
+
+.action-area {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    padding: 18px 20px;
+
+    border-top: 1px solid #282020;
+}
+
+/* ---------- BUTTONS ---------- */
+
+button {
+    min-height: 40px;
+
+    padding: 9px 18px;
+
+    border-radius: 0;
+
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.1s ease;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* ---------- PRIMARY BUTTON ---------- */
+
+button.primary {
+    background: #761b1b;
+
+    border: 1px solid #a32b2b;
+
+    color: #f0dddd;
+
+    box-shadow:
+        0 0 10px rgba(120, 20, 20, 0.12);
+}
+
+button.primary:hover {
+    background: #9a2424;
+
+    border-color: #c23939;
+
+    box-shadow:
+        0 0 14px rgba(160, 30, 30, 0.22);
+}
+
+/* ---------- SECONDARY BUTTON ---------- */
+
+button:not(.primary) {
+    background: #0b0808;
+
+    border: 1px solid #432626;
+
+    color: #a99595;
+}
+
+button:not(.primary):hover {
+    background: #160b0b;
+
+    border-color: #792727;
+
+    color: #d0bebe;
+}
+
+/* ---------- RESULTS ---------- */
+
+.results-body {
+    padding: 20px;
+}
+
+/* ---------- RESULT COUNT ---------- */
+
+.result-count {
+    margin-bottom: 14px;
+
+    color: #967878;
+
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+}
+
+/* ---------- RESULT ITEM ---------- */
+
+.result {
+    position: relative;
+
+    margin-bottom: 10px;
+
+    padding: 14px 15px;
+
+    background: #050404;
+
+    border: 1px solid #2d2222;
+    border-left: 2px solid #5d1e1e;
+
+    color: #cfc4c4;
+
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 12px;
+
+    line-height: 1.7;
+
+    overflow-wrap: anywhere;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.result:hover {
+    background: #0b0606;
+
+    border-left-color: #a52a2a;
+    border-color: #432525;
+}
+
+/* ---------- RESULT LINKS ---------- */
+
+.result a {
+    color: #bd4b4b;
+
+    text-decoration: none;
+}
+
+.result a:hover {
+    color: #e15a5a;
+    text-decoration: underline;
+}
+
+/* ---------- COPY BUTTON INSIDE RESULT ---------- */
+
+.result button {
+    margin-top: 10px;
+
+    min-height: 32px;
+
+    padding: 6px 12px;
+
+    font-size: 10px;
+}
+
+/* ---------- EMPTY RESULTS ---------- */
+
+.empty-state {
+    padding: 35px 15px;
+
+    text-align: center;
+
+    color: #625858;
+
+    font-family:
+        "Cascadia Mono",
+        "JetBrains Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+}
+
+/* ---------- FOOTER ---------- */
+
+.footer {
+    margin-top: 18px;
+
+    padding: 16px;
+
+    text-align: center;
+
+    background: #050505;
+
+    border-top: 1px solid #281d1d;
+
+    color: #584b4b;
+
+    font-family:
+        "Cascadia Mono",
+        "JetBrains Mono",
+        "Consolas",
+        monospace;
+
+    font-size: 10px;
+
+    letter-spacing: 1.5px;
+}
+
+/* ---------- SELECTION ---------- */
+
+::selection {
+    background: #751d1d;
+    color: #ffffff;
+}
+
+/* ---------- SCROLLBAR ---------- */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #030303;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3d1818;
+
+    border: 1px solid #1d0c0c;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #702222;
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 700px) {
+
+    .app {
+        padding: 10px;
+    }
+
+    .hero {
+        padding: 25px 18px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+        letter-spacing: 2px;
+    }
+
+    .filter-area,
+    .results-body {
+        padding: 14px;
+    }
+
+    .action-area {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+         TOP BAR
+    ====================================================== -->
+
+    <div class="topbar">
+
+        <div class="topbar-left">
+
+            <div class="terminal-dots">
+
+                <span class="terminal-dot active"></span>
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+
+            </div>
+
+            <span>
+                BUGHUNTER TERMINAL
+            </span>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <span>
+                SESSION: LOCAL
+            </span>
+
+            <span class="status">
+                OPERATIONAL
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <header class="hero glitch">
+
+        <div class="hero-kicker">
+            // SECURITY RESEARCH TOOL
+        </div>
+
+        <h1>
+            TARGET <span>DISCOVERY</span><br>
+            TERMINAL<span class="cursor"></span>
+        </h1>
+
+        <div class="hero-subtitle">
+
+            Build advanced Google search queries for discovering
+            vulnerability disclosure programs, bug bounty programs,
+            security policies, researcher programs and related
+            security resources.
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         COMMAND LINE
+    ====================================================== -->
+
+    <div class="command-line">
+
+        <strong>researcher@localhost</strong>:~$
+        ./dork-generator
+        --mode=advanced
+        --source=google
+
+    </div>
+
+
+    <!-- =====================================================
+         TARGET PARAMETERS
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <span class="section-title">
+                TARGET PARAMETERS
+            </span>
+
+            <span class="section-number">
+                MODULE 01
+            </span>
+
+        </div>
+
+
+        <div class="filter-area">
+
+
+            <div class="grid">
+
+
+                <!-- PROGRAM TYPE -->
+
+                <div class="field">
+
+                    <label>
+                        Program Type
+                    </label>
+
+                    <div class="input-wrap">
+
+                        <input
+                            id="program"
+                            list="programList"
+                            placeholder="Select or type..."
+                        >
+
+                        <datalist id="programList"></datalist>
+
+                    </div>
+
+                </div>
+
+
+                <!-- COUNTRY -->
+
+                <div class="field">
+
+                    <label>
+                        Country
+                    </label>
+
+                    <div class="input-wrap">
+
+                        <input
+                            id="country"
+                            list="countryList"
+                            placeholder="Select or type..."
+                        >
+
+                        <datalist id="countryList"></datalist>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INDUSTRY -->
+
+                <div class="field">
+
+                    <label>
+                        Industry
+                    </label>
+
+                    <div class="input-wrap">
+
+                        <input
+                            id="industry"
+                            list="industryList"
+                            placeholder="Select or type..."
+                        >
+
+                        <datalist id="industryList"></datalist>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REWARD -->
+
+                <div class="field">
+
+                    <label>
+                        Reward
+                    </label>
+
+                    <div class="input-wrap">
+
+                        <input
+                            id="reward"
+                            list="rewardList"
+                            placeholder="Select or type..."
+                        >
+
+                        <datalist id="rewardList"></datalist>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TLD -->
+
+                <div class="field">
+
+                    <label>
+                        Target TLD
+                    </label>
+
+                    <input
+                        id="tld"
+                        placeholder=".com / .in / .org"
+                    >
+
+                </div>
+
+
+                <!-- FILE TYPE -->
+
+                <div class="field">
+
+                    <label>
+                        File Type
+                    </label>
+
+                    <div class="input-wrap">
+
+                        <input
+                            id="filetype"
+                            list="filetypeList"
+                            placeholder="pdf / txt / json..."
+                        >
+
+                        <datalist id="filetypeList"></datalist>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INURL -->
+
+                <div class="field">
+
+                    <label>
+                        URL Path
+                    </label>
+
+                    <input
+                        id="inurl"
+                        placeholder="security / bounty / disclosure"
+                    >
+
+                </div>
+
+
+                <!-- INTITLE -->
+
+                <div class="field">
+
+                    <label>
+                        Page Title
+                    </label>
+
+                    <input
+                        id="intitle"
+                        placeholder="security policy"
+                    >
+
+                </div>
+
+
+                <!-- INTEXT -->
+
+                <div class="field">
+
+                    <label>
+                        Page Text
+                    </label>
+
+                    <input
+                        id="intext"
+                        placeholder="vulnerability disclosure"
+                    >
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="field">
+
+                    <label>
+                        Date Range
+                    </label>
+
+                    <div class="date-grid">
+
+                        <input
+                            id="startDate"
+                            type="date"
+                        >
+
+                        <input
+                            id="endDate"
+                            type="date"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- KEYWORDS -->
+
+                <div class="field full">
+
+                    <label>
+                        Custom Keywords
+                    </label>
+
+                    <input
+                        id="keywords"
+                        placeholder="API, mobile, security.txt, researcher..."
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 BOUNTY MODULE
+            ================================================== -->
+
+            <div
+                id="bountyBox"
+                class="bounty-module"
+            >
+
+                <div class="bounty-header">
+                    BOUNTY PARAMETERS
+                </div>
+
+                <div class="bounty-content">
+
+                    <div class="bounty-grid">
+
+
+                        <div class="select-wrap">
+
+                            <select id="currency">
+
+                                <option value="">
+                                    Currency
+                                </option>
+
+                                <option value="USD">
+                                    USD — US Dollar
+                                </option>
+
+                                <option value="EUR">
+                                    EUR — Euro
+                                </option>
+
+                                <option value="GBP">
+                                    GBP — Pound Sterling
+                                </option>
+
+                                <option value="INR">
+                                    INR — Indian Rupee
+                                </option>
+
+                                <option value="AUD">
+                                    AUD — Australian Dollar
+                                </option>
+
+                                <option value="CAD">
+                                    CAD — Canadian Dollar
+                                </option>
+
+                                <option value="CHF">
+                                    CHF — Swiss Franc
+                                </option>
+
+                                <option value="CNY">
+                                    CNY — Chinese Yuan
+                                </option>
+
+                                <option value="JPY">
+                                    JPY — Japanese Yen
+                                </option>
+
+                                <option value="KRW">
+                                    KRW — South Korean Won
+                                </option>
+
+                                <option value="SGD">
+                                    SGD — Singapore Dollar
+                                </option>
+
+                                <option value="HKD">
+                                    HKD — Hong Kong Dollar
+                                </option>
+
+                                <option value="NZD">
+                                    NZD — New Zealand Dollar
+                                </option>
+
+                                <option value="AED">
+                                    AED — UAE Dirham
+                                </option>
+
+                                <option value="SAR">
+                                    SAR — Saudi Riyal
+                                </option>
+
+                                <option value="QAR">
+                                    QAR — Qatari Riyal
+                                </option>
+
+                                <option value="KWD">
+                                    KWD — Kuwaiti Dinar
+                                </option>
+
+                                <option value="BHD">
+                                    BHD — Bahraini Dinar
+                                </option>
+
+                                <option value="OMR">
+                                    OMR — Omani Rial
+                                </option>
+
+                                <option value="ILS">
+                                    ILS — Israeli New Shekel
+                                </option>
+
+                                <option value="TRY">
+                                    TRY — Turkish Lira
+                                </option>
+
+                                <option value="BRL">
+                                    BRL — Brazilian Real
+                                </option>
+
+                                <option value="MXN">
+                                    MXN — Mexican Peso
+                                </option>
+
+                                <option value="ARS">
+                                    ARS — Argentine Peso
+                                </option>
+
+                                <option value="CLP">
+                                    CLP — Chilean Peso
+                                </option>
+
+                                <option value="COP">
+                                    COP — Colombian Peso
+                                </option>
+
+                                <option value="ZAR">
+                                    ZAR — South African Rand
+                                </option>
+
+                                <option value="NGN">
+                                    NGN — Nigerian Naira
+                                </option>
+
+                                <option value="KES">
+                                    KES — Kenyan Shilling
+                                </option>
+
+                                <option value="EGP">
+                                    EGP — Egyptian Pound
+                                </option>
+
+                                <option value="PKR">
+                                    PKR — Pakistani Rupee
+                                </option>
+
+                                <option value="BDT">
+                                    BDT — Bangladeshi Taka
+                                </option>
+
+                                <option value="LKR">
+                                    LKR — Sri Lankan Rupee
+                                </option>
+
+                                <option value="NPR">
+                                    NPR — Nepalese Rupee
+                                </option>
+
+                                <option value="THB">
+                                    THB — Thai Baht
+                                </option>
+
+                                <option value="MYR">
+                                    MYR — Malaysian Ringgit
+                                </option>
+
+                                <option value="IDR">
+                                    IDR — Indonesian Rupiah
+                                </option>
+
+                                <option value="PHP">
+                                    PHP — Philippine Peso
+                                </option>
+
+                                <option value="VND">
+                                    VND — Vietnamese Dong
+                                </option>
+
+                                <option value="RUB">
+                                    RUB — Russian Ruble
+                                </option>
+
+                                <option value="UAH">
+                                    UAH — Ukrainian Hryvnia
+                                </option>
+
+                                <option value="PLN">
+                                    PLN — Polish Zloty
+                                </option>
+
+                                <option value="CZK">
+                                    CZK — Czech Koruna
+                                </option>
+
+                                <option value="HUF">
+                                    HUF — Hungarian Forint
+                                </option>
+
+                                <option value="RON">
+                                    RON — Romanian Leu
+                                </option>
+
+                                <option value="SEK">
+                                    SEK — Swedish Krona
+                                </option>
+
+                                <option value="NOK">
+                                    NOK — Norwegian Krone
+                                </option>
+
+                                <option value="DKK">
+                                    DKK — Danish Krone
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <input
+                            id="minBounty"
+                            type="number"
+                            min="0"
+                            placeholder="Minimum bounty"
+                        >
+
+
+                        <input
+                            id="maxBounty"
+                            type="number"
+                            min="0"
+                            placeholder="Maximum bounty"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             OPERATORS
+        ====================================================== -->
+
+        <div class="section-header">
+
+            <span class="section-title">
+                GOOGLE OPERATORS
+            </span>
+
+            <span class="section-number">
+                MODULE 02
+            </span>
+
+        </div>
+
+
+        <div class="operator-area">
+
+            <div class="operator-grid">
+
+
+                <div class="operator">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="opSite"
+                            checked
+                        >
+
+                        <span>
+                            site:
+                        </span>
+
+                        <span class="operator-code">
+                            DOMAIN
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="operator">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="opInurl"
+                            checked
+                        >
+
+                        <span>
+                            inurl:
+                        </span>
+
+                        <span class="operator-code">
+                            PATH
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="operator">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="opIntitle"
+                            checked
+                        >
+
+                        <span>
+                            intitle:
+                        </span>
+
+                        <span class="operator-code">
+                            TITLE
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="operator">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="opIntext"
+                            checked
+                        >
+
+                        <span>
+                            intext:
+                        </span>
+
+                        <span class="operator-code">
+                            CONTENT
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="operator">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="opFiletype"
+                            checked
+                        >
+
+                        <span>
+                            filetype:
+                        </span>
+
+                        <span class="operator-code">
+                            FILE
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="operator">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="opDates"
+                            checked
+                        >
+
+                        <span>
+                            after: / before:
+                        </span>
+
+                        <span class="operator-code">
+                            DATE
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             ACTIONS
+        ====================================================== -->
+
+        <div class="action-area">
+
+            <div class="action-left">
+
+                ALL PARAMETERS ARE OPTIONAL.<br>
+
+                EMPTY PARAMETERS WILL BE OMITTED FROM QUERIES.
+
+            </div>
+
+
+            <div class="action-buttons">
+
+                <button
+                    class="primary"
+                    onclick="generateDorks()"
+                >
+                    EXECUTE SEARCH
+                </button>
+
+                <button
+                    onclick="copyAll()"
+                >
+                    COPY ALL
+                </button>
+
+                <button
+                    class="danger"
+                    onclick="clearAll()"
+                >
+                    RESET
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RESULTS
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <span class="section-title">
+                TERMINAL OUTPUT
+            </span>
+
+            <span class="section-number">
+                MODULE 03
+            </span>
+
+        </div>
+
+
+        <div class="results-body">
+
+            <div class="results-meta">
+
+                <span>
+                    QUERY GENERATION COMPLETE
+                </span>
+
+                <span>
+                    QUERIES:
+                    <strong
+                        id="count"
+                        class="query-count"
+                    >
+                        0
+                    </strong>
+                </span>
+
+            </div>
+
+
+            <div id="results">
+
+                <div class="empty">
+
+                    [ SYSTEM WAITING ]
+
+                    <br>
+
+                    Configure target parameters
+                    and execute the generator.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <span>
+            BUGHUNTER // TARGET DISCOVERY TERMINAL
+        </span>
+
+        <span>
+            AUTHORIZED SECURITY RESEARCH ONLY
+        </span>
+
+    </footer>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   PROGRAM TYPES
+========================================================= */
+
+const programTypes = [
+
+"Bug Bounty",
+"Bug Bounty Program",
+"Public Bug Bounty",
+"Private Bug Bounty",
+"Vulnerability Disclosure Program",
+"VDP",
+"Responsible Disclosure",
+"Responsible Disclosure Program",
+"Security.txt",
+"Security Policy",
+"Security Research",
+"Security Researcher Program",
+"Security Rewards",
+"Vulnerability Research",
+"Coordinated Vulnerability Disclosure",
+"CVD",
+"Coordinated Disclosure",
+"Security Hall of Fame",
+"Hall of Fame",
+"Security Acknowledgement",
+"Security Acknowledgment",
+"Researcher Recognition",
+"Security Appreciation",
+"Security Thanks",
+"Security Contact",
+"Security Contact Program",
+"Security Incident Response",
+"PSIRT",
+"Product Security",
+"Application Security",
+"Cybersecurity",
+"Information Security",
+"Whitehat Program",
+"White Hat Program",
+"Ethical Hacking Program",
+"Ethical Hacker Program",
+"Penetration Testing Program",
+"Security Testing",
+"Open Security Program",
+"Researcher Rewards",
+"Vulnerability Rewards",
+"Security Bounty",
+"Security Disclosure",
+"Vulnerability Disclosure",
+"Security Vulnerability Reporting",
+"Report a Vulnerability",
+"Report Security Issue",
+"Security Vulnerability Program"
+
+];
+
+
+/* =========================================================
+   COUNTRIES
+========================================================= */
+
+const countries = [
+
+"Afghanistan","Albania","Algeria","Andorra","Angola",
+"Antigua and Barbuda","Argentina","Armenia","Australia",
+"Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh",
+"Barbados","Belarus","Belgium","Belize","Benin","Bhutan",
+"Bolivia","Bosnia and Herzegovina","Botswana","Brazil",
+"Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde",
+"Cambodia","Cameroon","Canada","Central African Republic",
+"Chad","Chile","China","Colombia","Comoros","Congo",
+"Costa Rica","Cote d'Ivoire","Croatia","Cuba","Cyprus",
+"Czech Republic","Democratic Republic of the Congo","Denmark",
+"Djibouti","Dominica","Dominican Republic","Ecuador","Egypt",
+"El Salvador","Equatorial Guinea","Eritrea","Estonia",
+"Eswatini","Ethiopia","Fiji","Finland","France","Gabon",
+"Gambia","Georgia","Germany","Ghana","Greece","Grenada",
+"Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti",
+"Honduras","Hungary","Iceland","India","Indonesia","Iran",
+"Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan",
+"Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan",
+"Laos","Latvia","Lebanon","Lesotho","Liberia","Libya",
+"Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi",
+"Malaysia","Maldives","Mali","Malta","Marshall Islands",
+"Mauritania","Mauritius","Mexico","Micronesia","Moldova",
+"Monaco","Mongolia","Montenegro","Morocco","Mozambique",
+"Myanmar","Namibia","Nauru","Nepal","Netherlands",
+"New Zealand","Nicaragua","Niger","Nigeria","North Korea",
+"North Macedonia","Norway","Oman","Pakistan","Palau",
+"Palestine","Panama","Papua New Guinea","Paraguay","Peru",
+"Philippines","Poland","Portugal","Qatar","Romania","Russia",
+"Rwanda","Saint Kitts and Nevis","Saint Lucia",
+"Saint Vincent and the Grenadines","Samoa","San Marino",
+"Sao Tome and Principe","Saudi Arabia","Senegal","Serbia",
+"Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia",
+"Solomon Islands","Somalia","South Africa","South Korea",
+"South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden",
+"Switzerland","Syria","Taiwan","Tajikistan","Tanzania",
+"Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago",
+"Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine",
+"United Arab Emirates","United Kingdom","United States",
+"Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela",
+"Vietnam","Yemen","Zambia","Zimbabwe"
+
+];
+
+
+/* =========================================================
+   INDUSTRIES
+========================================================= */
+
+const industries = [
+
+"Accounting","Advertising","Aerospace","Agriculture","Airlines",
+"Animation","Apparel","Architecture","Artificial Intelligence",
+"Automotive","Banking","Biotechnology","Blockchain","Broadcasting",
+"Building Materials","Business Services","Chemical","Cloud Computing",
+"Construction","Consulting","Consumer Electronics","Consumer Goods",
+"Cybersecurity","Data Analytics","Data Centers","Defense","Defence",
+"Digital Media","Education","EdTech","Energy","Engineering",
+"Entertainment","Environmental Services","eCommerce","Fashion",
+"Finance","FinTech","Food","Food Processing","Gaming","Government",
+"Government Services","Healthcare","HealthTech","Hospitality",
+"Hotels","Human Resources","Insurance","Internet","IT Services",
+"Information Technology","Legal","Legal Services","Logistics",
+"Manufacturing","Marine","Maritime","Media","Medical Devices",
+"Mining","Mobile Applications","Music","News","Nonprofit","Oil and Gas",
+"Online Services","Pharmaceutical","Pharma","Professional Services",
+"Public Sector","Publishing","Real Estate","Recruitment",
+"Renewable Energy","Research","Retail","Robotics","Semiconductor",
+"Shipping","Social Media","Software","Software as a Service","SaaS",
+"Space","Sports","Sports Technology","Telecommunications","Telecom",
+"Transportation","Travel","Travel Technology","Utilities",
+"Video Games","Virtual Reality","Web3","Cryptocurrency",
+"Financial Services","Investment Banking","Stock Market",
+"Capital Markets","Venture Capital","Private Equity",
+"Payment Processing","Payment Gateway","Digital Payments",
+"Insurance Technology","PropTech","InsurTech","RegTech","LegalTech",
+"GovTech","AgriTech","FoodTech","RetailTech","HRTech","MarTech",
+"AdTech","Deep Tech","Quantum Computing","Internet of Things","IoT",
+"Machine Learning","Natural Language Processing","Computer Vision",
+"Data Science","Big Data","DevOps","Developer Tools","Open Source",
+"Hosting","Domain Services","DNS Services",
+"Content Delivery Network","CDN","Web Hosting","Cloud Infrastructure",
+"Cloud Security","Network Security","Application Security",
+"Identity and Access Management","IAM","Authentication",
+"Digital Identity","Privacy","Data Protection","Compliance",
+"Risk Management","Audit","Accounting Software","Enterprise Software",
+"CRM","ERP","Project Management","Collaboration Software",
+"Communication","Video Conferencing","Messaging","Email",
+"Search Engines","Online Advertising","Streaming","Video Streaming",
+"Audio Streaming","Podcasting","Photography","Film","Television",
+"Gaming Platforms","Game Development","Esports","Fitness",
+"Healthcare Services","Hospitals","Clinics","Medical Research",
+"Biotech Research","Genomics","Diagnostics","Pharmaceutical Research",
+"Telemedicine","Medical Technology","Dental","Veterinary",
+"Public Health","Education Technology","Universities","Schools",
+"Online Learning","E-Learning","Training","Research Institutions",
+"Government Technology","Defense Technology","Military",
+"Military Technology","National Security","Intelligence",
+"Law Enforcement","Emergency Services","Public Safety",
+"Transportation Technology","Automotive Technology","Electric Vehicles",
+"Battery Technology","Railways","Public Transport","Air Transport",
+"Maritime Transport","Supply Chain","Warehouse","Freight","Courier",
+"Delivery","Real Estate Technology","Property Management",
+"Construction Technology","Smart Cities","Smart Homes",
+"Energy Technology","Solar Energy","Wind Energy","Nuclear Energy",
+"Electric Utilities","Water Utilities","Waste Management",
+"Environmental Technology","Climate Technology","Carbon Management",
+"Industrial Automation","Factory Automation","Industrial IoT",
+"Manufacturing Technology","3D Printing","Materials Science",
+"Nanotechnology","Chemical Manufacturing","Petrochemical","Metals",
+"Steel","Mining Technology","Oil Technology","Gas Technology",
+"Geospatial","Satellite","Space Technology","Drone Technology",
+"Unmanned Systems","Robotics Technology","Consumer Technology",
+"Smartphones","Computer Hardware","Semiconductors","Electronics",
+"Networking","Data Storage","Database","API Platforms",
+"Developer Platforms","Open Banking","Neobanking","Digital Banking",
+"Cryptocurrency Exchange","DeFi","NFT","Metaverse",
+"Web3 Infrastructure","Cyber Insurance","Security Operations","SOC",
+"Threat Intelligence","Digital Forensics","Incident Response",
+"Penetration Testing","Bug Bounty","Vulnerability Management",
+"Security Research","Information Security","Network Infrastructure",
+"Internet Infrastructure","Domain Registrar","DNS","CDN Services",
+"Content Platforms","Online Marketplace","Classifieds",
+"Search Technology","Social Networking","Community Platforms",
+"Forums","Developer Communities","Open Data","Government Portal",
+"Citizen Services","Tax Technology","Public Finance",
+"Healthcare Insurance","Pharmacy","Retail Banking","Consumer Finance",
+"Loans","Mortgage","Payments","Remittance","Accounting Technology",
+"Procurement","Supply Chain Technology","Business Intelligence",
+"Enterprise IT","Managed Services","IT Consulting",
+"Technology Consulting","Management Consulting","Marketing",
+"Digital Marketing","Branding","Public Relations","Customer Support",
+"Call Centers","Outsourcing","Human Capital","Recruitment Technology",
+"Job Platforms","Freelancing","Creator Economy","Influencer Marketing",
+"Content Creation","Online Communities","News Media","Digital Publishing",
+"Publishing Technology","Library Services","Scientific Research",
+"Academic Research","Laboratories","Defense Contractors",
+"Government Contractors","Security Contractors","Aviation",
+"Aircraft Manufacturing","Airport Services","Tourism",
+"Hotels and Resorts","Hospitality Technology","Restaurant Technology",
+"Food Delivery","Grocery","Consumer Retail","Luxury Goods","Jewelry",
+"Sports Equipment","Fashion Technology","Textiles",
+"Industrial Equipment","Heavy Machinery","Automotive Manufacturing",
+"Vehicle Rental","Ride Sharing","Mobility","Electric Mobility",
+"Last Mile Delivery","Postal Services","Packaging",
+"Paper Manufacturing","Printing","Media Technology",
+"Advertising Technology","Gaming Technology","Entertainment Technology",
+"Music Technology","Film Technology","Broadcast Technology",
+"Telecommunications Technology","5G","Wireless",
+"Internet Service Provider","ISP","Satellite Communications",
+"Fiber Optics","Data Infrastructure","Digital Infrastructure",
+"Critical Infrastructure"
+
+];
+
+
+/* =========================================================
+   REWARDS
+========================================================= */
+
+const rewards = [
+
+"Bounty",
+"Bug Bounty",
+"Cash",
+"Cash Reward",
+"Monetary Reward",
+"Financial Reward",
+"Reward",
+"Recognition",
+"Acknowledgement",
+"Acknowledgment",
+"Appreciation",
+"Hall of Fame",
+"Security Hall of Fame",
+"Researcher Hall of Fame",
+"Swag",
+"Merchandise",
+"Gift",
+"Gift Card",
+"Certificate",
+"Certificate of Appreciation",
+"Public Recognition",
+"Researcher Recognition",
+"Security Recognition",
+"Thanks",
+"Thank You",
+"Credit",
+"Security Credit",
+"Name Recognition",
+"Leaderboard",
+"Researcher Leaderboard",
+"Points",
+"Reputation",
+"Bonus",
+"Prize",
+"Rewards",
+"Non Monetary Reward",
+"Non-Monetary Reward",
+"Responsible Disclosure Credit",
+"Vulnerability Credit",
+"Security Appreciation",
+"Researcher Appreciation",
+"Bug Bounty Reward",
+"Cash Bounty",
+"Bug Bounty Cash",
+"Private Reward",
+"Public Recognition",
+"Security Research Reward"
+
+];
+
+
+/* =========================================================
+   FILE TYPES
+========================================================= */
+
+const fileTypes = [
+
+"pdf","txt","csv","json","xml","yaml","yml","conf",
+"config","ini","env","log","sql","bak","backup","old",
+"zip","tar","gz","7z","rar","doc","docx","xls","xlsx",
+"ppt","pptx","rtf","md","markdown","html","htm","php",
+"asp","aspx","jsp","js","css","webmanifest","pem","key",
+"crt"
+
+];
+
+
+/* =========================================================
+   CREATE DATALISTS
+========================================================= */
+
+function createList(id,items){
+
+    const list =
+        document.getElementById(id);
+
+    items.forEach(item => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = item;
+
+        list.appendChild(option);
+
+    });
+
+}
+
+
+createList("programList",programTypes);
+
+createList("countryList",countries);
+
+createList("industryList",industries);
+
+createList("rewardList",rewards);
+
+createList("filetypeList",fileTypes);
+
+
+/* =========================================================
+   GET VALUE
+========================================================= */
+
+function getValue(id){
+
+    return document
+        .getElementById(id)
+        .value
+        .trim();
+
+}
+
+
+/* =========================================================
+   BOUNTY DETECTION
+========================================================= */
+
+const rewardInput =
+    document.getElementById("reward");
+
+const bountyBox =
+    document.getElementById("bountyBox");
+
+
+function checkBounty(){
+
+    const value =
+        rewardInput.value.toLowerCase();
+
+    const show =
+        value.includes("bounty") ||
+        value.includes("cash") ||
+        value.includes("monetary") ||
+        value.includes("financial") ||
+        value.includes("reward");
+
+    bountyBox.style.display =
+        show ? "block" : "none";
+
+}
+
+
+rewardInput.addEventListener(
+    "input",
+    checkBounty
+);
+
+
+/* =========================================================
+   BUILD FILTERS
+========================================================= */
+
+function buildFilters(){
+
+    const filters = [];
+
+
+    const program =
+        getValue("program");
+
+    const country =
+        getValue("country");
+
+    const industry =
+        getValue("industry");
+
+    const reward =
+        getValue("reward");
+
+    const tld =
+        getValue("tld");
+
+    const keywords =
+        getValue("keywords");
+
+    const inurl =
+        getValue("inurl");
+
+    const intitle =
+        getValue("intitle");
+
+    const intext =
+        getValue("intext");
+
+    const filetype =
+        getValue("filetype");
+
+    const startDate =
+        getValue("startDate");
+
+    const endDate =
+        getValue("endDate");
+
+
+    /* PROGRAM */
+
+    if(program){
+
+        filters.push(
+            `"${program}"`
+        );
+
+    }
+
+
+    /* COUNTRY */
+
+    if(country){
+
+        filters.push(
+            `"${country}"`
+        );
+
+    }
+
+
+    /* INDUSTRY */
+
+    if(industry){
+
+        filters.push(
+            `"${industry}"`
+        );
+
+    }
+
+
+    /* REWARD */
+
+    if(reward){
+
+        filters.push(
+            `"${reward}"`
+        );
+
+
+        const rewardLower =
+            reward.toLowerCase();
+
+
+        if(
+            rewardLower.includes("bounty") ||
+            rewardLower.includes("cash") ||
+            rewardLower.includes("monetary") ||
+            rewardLower.includes("financial") ||
+            rewardLower.includes("reward")
+        ){
+
+            const currency =
+                getValue("currency");
+
+            const min =
+                getValue("minBounty");
+
+            const max =
+                getValue("maxBounty");
+
+
+            if(currency){
+
+                filters.push(
+                    `"${currency}"`
+                );
+
+            }
+
+
+            if(min){
+
+                filters.push(
+                    `"${currency || "USD"} ${min}"`
+                );
+
+                filters.push(
+                    `"${currency || "$"}${min}"`
+                );
+
+            }
+
+
+            if(max){
+
+                filters.push(
+                    `"${currency || "USD"} ${max}"`
+                );
+
+                filters.push(
+                    `"${currency || "$"}${max}"`
+                );
+
+            }
+
+        }
+
+    }
+
+
+    /* TLD */
+
+    if(tld){
+
+        let cleanTld =
+            tld.trim();
+
+        if(
+            !cleanTld.startsWith(".")
+        ){
+
+            cleanTld =
+                "." + cleanTld;
+
+        }
+
+
+        if(
+            document.getElementById(
+                "opSite"
+            ).checked
+        ){
+
+            filters.push(
+                `site:${cleanTld}`
+            );
+
+        }
+
+    }
+
+
+    /* CUSTOM KEYWORDS */
+
+    if(keywords){
+
+        keywords
+            .split(",")
+            .map(x => x.trim())
+            .filter(Boolean)
+            .forEach(keyword => {
+
+                filters.push(
+                    `"${keyword}"`
+                );
+
+            });
+
+    }
+
+
+    /* INURL */
+
+    if(
+        inurl &&
+        document.getElementById(
+            "opInurl"
+        ).checked
+    ){
+
+        filters.push(
+            `inurl:${inurl}`
+        );
+
+    }
+
+
+    /* INTITLE */
+
+    if(
+        intitle &&
+        document.getElementById(
+            "opIntitle"
+        ).checked
+    ){
+
+        filters.push(
+            `intitle:${intitle}`
+        );
+
+    }
+
+
+    /* INTEXT */
+
+    if(
+        intext &&
+        document.getElementById(
+            "opIntext"
+        ).checked
+    ){
+
+        filters.push(
+            `intext:${intext}`
+        );
+
+    }
+
+
+    /* FILETYPE */
+
+    if(
+        filetype &&
+        document.getElementById(
+            "opFiletype"
+        ).checked
+    ){
+
+        filters.push(
+            `filetype:${filetype}`
+        );
+
+    }
+
+
+    /* DATE */
+
+    if(
+        document.getElementById(
+            "opDates"
+        ).checked
+    ){
+
+        if(startDate){
+
+            filters.push(
+                `after:${startDate}`
+            );
+
+        }
+
+        if(endDate){
+
+            filters.push(
+                `before:${endDate}`
+            );
+
+        }
+
+    }
+
+
+    return filters;
+
+}
+
+
+/* =========================================================
+   GENERATE DORKS
+========================================================= */
+
+function generateDorks(){
+
+    const filters =
+        buildFilters();
+
+
+    const base =
+        filters.join(" ");
+
+
+    const queries = [];
+
+
+    queries.push(
+        `${base} "bug bounty"`.trim()
+    );
+
+    queries.push(
+        `${base} "bug bounty program"`.trim()
+    );
+
+    queries.push(
+        `${base} "vulnerability disclosure program"`.trim()
+    );
+
+    queries.push(
+        `${base} "responsible disclosure"`.trim()
+    );
+
+    queries.push(
+        `${base} "coordinated vulnerability disclosure"`.trim()
+    );
+
+    queries.push(
+        `${base} "security policy"`.trim()
+    );
+
+    queries.push(
+        `${base} "security.txt"`.trim()
+    );
+
+    queries.push(
+        `${base} "security contact"`.trim()
+    );
+
+    queries.push(
+        `${base} "safe harbor" security`.trim()
+    );
+
+    queries.push(
+        `${base} "legal" "security researcher"`.trim()
+    );
+
+    queries.push(
+        `${base} "security hall of fame"`.trim()
+    );
+
+    queries.push(
+        `${base} "security researcher"`.trim()
+    );
+
+    queries.push(
+        `${base} "security researcher" reward`.trim()
+    );
+
+    queries.push(
+        `${base} "submit vulnerability"`.trim()
+    );
+
+    queries.push(
+        `${base} "report vulnerability"`.trim()
+    );
+
+    queries.push(
+        `${base} "report a security issue"`.trim()
+    );
+
+    queries.push(
+        `${base} "bounty" "security researcher"`.trim()
+    );
+
+    queries.push(
+        `${base} "bounty" "vulnerability"`.trim()
+    );
+
+    queries.push(
+        `${base} "reward" "vulnerability disclosure"`.trim()
+    );
+
+    queries.push(
+        `${base} intitle:"security"`.trim()
+    );
+
+    queries.push(
+        `${base} inurl:security`.trim()
+    );
+
+
+    const unique =
+        [...new Set(
+            queries.filter(Boolean)
+        )];
+
+
+    showResults(unique);
+
+}
+
+
+/* =========================================================
+   SHOW RESULTS
+========================================================= */
+
+function showResults(queries){
+
+    const results =
+        document.getElementById("results");
+
+    const count =
+        document.getElementById("count");
+
+
+    count.textContent =
+        queries.length;
+
+
+    results.innerHTML = "";
+
+
+    queries.forEach(
+        (query,index) => {
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "result-item";
+
+
+            item.innerHTML = `
+
+                <div class="result-top">
+
+                    <span class="result-number">
+
+                        QUERY_${String(index + 1)
+                            .padStart(2,"0")}
+
+                    </span>
+
+                    <span class="result-status">
+
+                        READY
+
+                    </span>
+
+                </div>
+
+
+                <div class="result-content">
+
+                    <div class="dork-text">
+
+                        ${escapeHTML(query)}
+
+                    </div>
+
+
+                    <div class="result-actions">
+
+                        <button
+                            onclick="copyDork(${index})"
+                        >
+                            COPY
+                        </button>
+
+
+                        <button
+                            onclick="searchGoogle(${index})"
+                        >
+                            OPEN GOOGLE
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            results.appendChild(item);
+
+        }
+    );
+
+
+    window.generatedDorks =
+        queries;
+
+}
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+function escapeHTML(text){
+
+    return text
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================================
+   COPY SINGLE
+========================================================= */
+
+async function copyDork(index){
+
+    if(
+        !window.generatedDorks ||
+        !window.generatedDorks[index]
+    ){
+
+        return;
+
+    }
+
+
+    const text =
+        window.generatedDorks[index];
+
+
+    try{
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        showTemporaryMessage(
+            "QUERY COPIED"
+        );
+
+    }catch{
+
+        fallbackCopy(text);
+
+    }
+
+}
+
+
+/* =========================================================
+   COPY ALL
+========================================================= */
+
+async function copyAll(){
+
+    if(
+        !window.generatedDorks ||
+        !window.generatedDorks.length
+    ){
+
+        showTemporaryMessage(
+            "NO QUERIES AVAILABLE"
+        );
+
+        return;
+
+    }
+
+
+    const text =
+        window.generatedDorks.join("\n\n");
+
+
+    try{
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        showTemporaryMessage(
+            "ALL QUERIES COPIED"
+        );
+
+    }catch{
+
+        fallbackCopy(text);
+
+    }
+
+}
+
+
+/* =========================================================
+   GOOGLE
+========================================================= */
+
+function searchGoogle(index){
+
+    if(
+        !window.generatedDorks ||
+        !window.generatedDorks[index]
+    ){
+
+        return;
+
+    }
+
+
+    const query =
+        window.generatedDorks[index];
+
+
+    window.open(
+        "https://www.google.com/search?q=" +
+        encodeURIComponent(query),
+        "_blank"
+    );
+
+}
+
+
+/* =========================================================
+   FALLBACK COPY
+========================================================= */
+
+function fallbackCopy(text){
+
+    const textarea =
+        document.createElement("textarea");
+
+
+    textarea.value =
+        text;
+
+
+    document.body.appendChild(
+        textarea
+    );
+
+
+    textarea.select();
+
+    document.execCommand("copy");
+
+    textarea.remove();
+
+
+    showTemporaryMessage(
+        "COPIED TO CLIPBOARD"
+    );
+
+}
+
+
+/* =========================================================
+   TEMP MESSAGE
+========================================================= */
+
+let messageTimer;
+
+
+function showTemporaryMessage(message){
+
+    clearTimeout(messageTimer);
+
+
+    const old =
+        document.getElementById(
+            "systemMessage"
+        );
+
+
+    if(old){
+        old.remove();
+    }
+
+
+    const box =
+        document.createElement("div");
+
+
+    box.id =
+        "systemMessage";
+
+
+    box.textContent =
+        `[ SYSTEM ] ${message}`;
+
+
+    box.style.position =
+        "fixed";
+
+
+    box.style.bottom =
+        "25px";
+
+
+    box.style.right =
+        "25px";
+
+
+    box.style.zIndex =
+        "1000";
+
+
+    box.style.padding =
+        "12px 16px";
+
+
+    box.style.background =
+        "#121512";
+
+
+    box.style.border =
+        "1px solid #596659";
+
+
+    box.style.color =
+        "#b9c4ba";
+
+
+    box.style.fontFamily =
+        '"Courier New", monospace';
+
+
+    box.style.fontSize =
+        "10px";
+
+
+    document.body.appendChild(
+        box
+    );
+
+
+    messageTimer =
+        setTimeout(
+            () => box.remove(),
+            1800
+        );
+
+}
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearAll(){
+
+    const fields = [
+
+        "program",
+        "country",
+        "industry",
+        "reward",
+        "tld",
+        "filetype",
+        "keywords",
+        "inurl",
+        "intitle",
+        "intext",
+        "startDate",
+        "endDate",
+        "currency",
+        "minBounty",
+        "maxBounty"
+
+    ];
+
+
+    fields.forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+
+        if(element){
+
+            element.value = "";
+
+        }
+
+    });
+
+
+    bountyBox.style.display =
+        "none";
+
+
+    document.getElementById(
+        "results"
+    ).innerHTML = `
+
+        <div class="empty">
+
+            [ SYSTEM WAITING ]
+
+            <br>
+
+            Configure target parameters
+            and execute the generator.
+
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "count"
+    ).textContent =
+        "0";
+
+
+    window.generatedDorks = [];
+
+
+    showTemporaryMessage(
+        "SESSION RESET"
+    );
+
+}
+
+
+/* =========================================================
+   ENTER KEY
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key === "Enter" &&
+            event.target.tagName === "INPUT"
+        ){
+
+            generateDorks();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL STATE
+========================================================= */
+
+window.generatedDorks = [];
+
+
+</script>
+
+</body>
+</html>
